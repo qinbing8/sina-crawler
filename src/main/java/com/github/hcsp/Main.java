@@ -9,7 +9,6 @@ import org.apache.http.util.EntityUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -40,7 +39,7 @@ public class Main {
             //我们只关心news.sina的，排除登录页面
             if (isInterestingLink(link)) {
                 Document doc = httpGetAndParseHtml(link);
-                doc.select("a").stream().map(aTag->aTag.attr("href")).forEach(linkPool::add);
+                doc.select("a").stream().map(aTag -> aTag.attr("href")).forEach(linkPool::add);
                 //假如这是一个新闻的详情页面，就存入数据库，否则就什么都不做
                 storeIntoDatabaseIfItIsNewsPage(doc);
                 processdLinks.add(link);
