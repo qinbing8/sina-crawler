@@ -15,37 +15,40 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
-public class Crawler {
-    private CrawlerDAO dao = new JdbcCrawlerDao();
+public class Crawler extends Thread {
+    private CrawlerDAO dao;
 
-    public void run() throws SQLException, IOException {
-
-        String link;
-
-        // 从数据库中加载下一个链接，如果能加载到，则进行循环
-        while ((link = dao.getNextLinkThenDelete()) != null) {
-
-            // 询问数据库，当前链接是不是已经被处理过了？
-            if (dao.isLinkProcessed(link)) {
-                continue;
-            }
-
-            if (isInterestingLink(link)) {
-                System.out.println("link = " + link);
-                Document doc = httpGetAndParseHtml(link);
-
-                parseUrlsFromPageAndStoreIntoDatabase(doc);
-
-                storeIntoDatabaseIfItIsNewsPage(doc, link);
-
-                dao.updateDatabase(link, "INSERT INTO LINKS_ALREADY_PROCESSED (link) values (?)");
-            }
-        }
+    public Crawler(CrawlerDAO dao) {
+        this.dao = dao;
     }
 
-    @SuppressWarnings("DMI_CONSTANT_DB_PASSWORD")
-    public static void main(String[] args) throws IOException, SQLException {
-        new Crawler().run();
+    @Override
+    public void run() {
+        try {
+            String link;
+
+            // 从数据库中加载下一个链接，如果能加载到，则进行循环
+            while ((link = dao.getNextLinkThenDelete()) != null) {
+
+                // 询问数据库，当前链接是不是已经被处理过了？
+                if (dao.isLinkProcessed(link)) {
+                    continue;
+                }
+
+                if (isInterestingLink(link)) {
+                    System.out.println("link = " + link);
+                    Document doc = httpGetAndParseHtml(link);
+
+                    parseUrlsFromPageAndStoreIntoDatabase(doc);
+
+                    storeIntoDatabaseIfItIsNewsPage(doc, link);
+
+                    dao.insertProcessedLink(link);
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void parseUrlsFromPageAndStoreIntoDatabase(Document doc) throws SQLException {
@@ -55,9 +58,12 @@ public class Crawler {
             if (href.startsWith("//")) {
                 href = "https:" + href;
             }
+            if (href.contains("\\/")) {
+                href = href.replace("\\", "");
+            }
 
             if (!href.toLowerCase().startsWith("javascript")) {
-                dao.updateDatabase(href, "INSERT INTO LINKS_TO_BE_PROCESSED (link) values (?)");
+                dao.inserLinkToBeProcess(href);
             }
         }
     }
