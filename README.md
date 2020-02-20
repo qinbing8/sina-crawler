@@ -38,4 +38,4 @@
 * console -> H2 database
 * H2 database > Elasticsearch
 
-[sina-crawler笔记](https://qbzzz.top/2020/02/20/30%e5%a4%9a%e7%ba%bf%e7%a8%8b%e7%88%ac%e8%99%ab%e4%b8%8ees%e6%96%b0%e9%97%bb%e6%90%9c%e7%b4%a2%e5%bc%95%e6%93%8e/)
+[从零开始sina-crawler笔记](https://qbzzz.top/2020/02/20/30%e5%a4%9a%e7%ba%bf%e7%a8%8b%e7%88%ac%e8%99%ab%e4%b8%8ees%e6%96%b0%e9%97%bb%e6%90%9c%e7%b4%a2%e5%bc%95%e6%93%8e/)
