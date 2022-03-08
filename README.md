@@ -15,7 +15,7 @@
 ### 项目的原则
 
 * 【强制】使用GitHub+主干/分支模型进行开发
-* 禁止直接pu的master
+* 禁止直接push到master
 * 所有的变更通过PR进行
 * 【强制】自动化代码质量检查+测试
  * Checkstyle/SpotBugs	
